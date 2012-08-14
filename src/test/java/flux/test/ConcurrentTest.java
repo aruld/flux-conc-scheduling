@@ -8,6 +8,12 @@ import static junit.framework.Assert.assertEquals;
 
 public class ConcurrentTest extends AbstractFluxTest {
 
+    @Override
+    public void setUpTest() throws Exception {
+        clearEngine = true;
+        super.setUpTest();
+    }
+
     @Test
     public void testConcurrentPut() throws Exception {
         FlowChart flowChart = engineHelper.makeFlowChart(GenomesProcessor.genomesChildWorkflowTemplate);
@@ -23,6 +29,6 @@ public class ConcurrentTest extends AbstractFluxTest {
 
         String name = engine.put(genomesWorkflow);
         System.out.println("Scheduled genomes parent workflow : " + name);
-        assertEquals(1000, waitForRuns(GenomesProcessor.joinNamespace, 1000, 30, 100));
+        assertEquals(1000, waitForRuns(GenomesProcessor.joinNamespace, 1000, 10, 120));
     }
 }

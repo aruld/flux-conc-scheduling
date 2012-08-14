@@ -27,19 +27,26 @@ public abstract class AbstractFluxTest {
         log.info("[START] AbstractFluxTest.setUpTest");
 
         startTime = new Date();
+        String database = System.getProperty("database");
+        if (database != null && database.equalsIgnoreCase(DatabaseType.POSTGRES.toString())) {
+            enginePropertiesFile = "engine-postgres-config.properties";
+            log.info("Using Postgres backend.");
+        } else if (database != null && database.equalsIgnoreCase(DatabaseType.MYSQL.toString())) {
+            enginePropertiesFile = "engine-mysql-config.properties";
+            log.info("Using MySQL backend.");
+        }
         config = factory.makeConfigurationFromProperties(enginePropertiesFile);
         Engine localEngine = factory.makeEngine(config);
-
-        if (clearEngine) {
-            engine.clear();
-        }
 
         // Enable remote access to secured engine
         RemoteSecurity remoteSecurity = factory.makeRemoteSecurity(config, localEngine);
         engine = remoteSecurity.login(fluxUsername, fluxPassword);
+        if (clearEngine) {
+            engine.clear();
+        }
         engine.start();
-
         log.info("[END] AbstractFluxTest.setUpTest");
+        log.info("Engine version # " + engine.getVersion());
     }
 
     @After

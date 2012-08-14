@@ -37,6 +37,7 @@ public class GenomesProcessor implements ActionListener {
 
     @Override
     public Object actionFired(final KeyFlowContext flowContext) throws Exception {
+        long begin = System.currentTimeMillis();
         int NUM_WORKERS = 10;// Default is 10 workers
         int SLEEP_TIME = 5;// Default is 5 secs
         String JOIN_TIME_EXPRESSION = "+5s";
@@ -149,7 +150,8 @@ public class GenomesProcessor implements ActionListener {
             List<Runnable> waiting = executor.shutdownNow();
             System.out.println("Workers finished scheduling. Waiting to execute = " + waiting.size());
         }
-
+        long end = System.currentTimeMillis();
+        System.out.println("Action executed in " + (end - begin)/1000 + "s.");
         return null;
     }
 
