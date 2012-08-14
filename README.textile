@@ -21,9 +21,11 @@ mvn install:install-file -DgroupId=flux -DartifactId=flux -Dversion=7.11.3 -Dpac
 h2. Testing
 
 * ConcurrentTest is a standalone test case which runs using an in-memory H2 database by default. Configuration for Postgres and MySQL are provided.
+<pre>
 <code>
 mvn test
 mvn test -Ddatabase=mysql
 mvn test -Ddatabase=postgres
 </code>
+</pre>
 * There are two workflows used: parent and child. Child workflow template is stored in Flux repository. Parent workflow spins off child instance for each S3 bucket.
