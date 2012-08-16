@@ -151,7 +151,7 @@ public class GenomesProcessor implements ActionListener {
             System.out.println("Workers finished scheduling. Waiting to execute = " + waiting.size());
         }
         long end = System.currentTimeMillis();
-        System.out.println("Action executed in " + (end - begin)/1000 + "s.");
+        System.out.println("Action executed in " + (end - begin) / 1000 + "s.");
         return null;
     }
 
