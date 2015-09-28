@@ -6,7 +6,7 @@ The dataset used in this sample comes from Amazon S3 bucket "1000genomes":http:/
 
 This sample implements Flux best practices when dealing with java actions. Java action is a double-edged sword, while offering more
 power for advanced users, it is sometimes tricky to implement how to gracefully return them to Flux when involving calls to external
-services which Flux has no control over. This can be implemented using flowContext.isInterrupted() "API":http://support.flux.ly/javadoc/flux/FlowContext.html#isInterrupted().
+services which Flux has no control over. This can be implemented using flowContext.isInterrupted() "API": https://support.flux.ly/80/javadoc/flux/FlowContext.html#isInterrupted().
 Interrupting the workflow would gracefully shutdown resources and exit from execution normally. This may be useful in testing too,
 users can interrupt it from Flux Operations console to skip current execution and proceed to next steps.
 
