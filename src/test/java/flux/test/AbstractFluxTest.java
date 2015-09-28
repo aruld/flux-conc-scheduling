@@ -1,6 +1,7 @@
 package flux.test;
 
 import flux.*;
+import fluximpl.org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -10,7 +11,6 @@ import java.util.Date;
 
 public abstract class AbstractFluxTest {
     protected Factory factory = Factory.makeInstance();
-    protected EngineHelper engineHelper = factory.makeEngineHelper();
     private Configuration config;
     protected Engine engine;
     protected String enginePropertiesFile = "engine-config.properties";
@@ -35,14 +35,17 @@ public abstract class AbstractFluxTest {
             enginePropertiesFile = "engine-mysql-config.properties";
             log.info("Using MySQL backend.");
         }
-        config = factory.makeConfigurationFromProperties(enginePropertiesFile);
-        Engine localEngine = factory.makeEngine(config);
-
-        // Enable remote access to secured engine
-        RemoteSecurity remoteSecurity = factory.makeRemoteSecurity(config, localEngine);
-        engine = remoteSecurity.login(fluxUsername, fluxPassword);
+        config = new Configuration(enginePropertiesFile);
+        engine = factory.makeEngine(config);
+        engine.login(fluxUsername, fluxPassword);
+        String clear = System.getProperty("clearEngine");
+        if (StringUtils.isNotBlank(clear)) {
+            clearEngine = Boolean.valueOf(clear);
+        }
         if (clearEngine) {
+            log.info("[START] AbstractFluxTest.setUpTest.clearEngine");
             engine.clear();
+            log.info("[END] AbstractFluxTest.setUpTest.clearEngine");
         }
         engine.start();
         log.info("[END] AbstractFluxTest.setUpTest");
@@ -53,6 +56,8 @@ public abstract class AbstractFluxTest {
     public void tearDownTest() throws Exception {
         log.info("[START] AbstractFluxTest.tearDownTest");
         fired = false;
+        Thread.sleep(5000);
+        engine.stop();
         engine.dispose();
 
         log.info("[END] AbstractFluxTest.tearDownTest");

@@ -1,4 +1,5 @@
-h1. Flux Concurrent Scheduling Sample
+Flux Concurrent Scheduling Sample
+===
 
 This sample demonstrates a concurrent approach to scheduling Flux workflows that requires high throughput and coordinated executions.
 The dataset used in this sample comes from Amazon S3 bucket "1000genomes":http://aws.amazon.com/1000genomes/. It uses Amazon S3 APIs to retrieve objects and schedule them using a java action in Flux.
@@ -9,23 +10,36 @@ services which Flux has no control over. This can be implemented using flowConte
 Interrupting the workflow would gracefully shutdown resources and exit from execution normally. This may be useful in testing too,
 users can interrupt it from Flux Operations console to skip current execution and proceed to next steps.
 
-h2. Setup
+Setup
+===
 
-* Download and Extract Flux from http://flux.ly/download
+* Download and Install Flux from [here](https://flux.ly/download)
 * Install flux.jar to your local maven repo:
-<code>
-mvn install:install-file -DgroupId=flux -DartifactId=flux -Dversion=7.11.3 -Dpackaging=jar -Dfile=flux.jar
-</code>
-* Engine configuration is defined in engine-config.properties and runtime-config.properties.
 
-h2. Testing
+```
+    mvn install:install-file -DgroupId=flux -DartifactId=flux -Dversion=8.0.11 -Dpackaging=jar -Dfile=flux.jar
+```
+* Engine configuration is defined in engine-config.properties and runtime-config.properties, make changes appropriately.
 
-* ConcurrentTest is a standalone test case which runs using an in-memory H2 database by default. Configuration for Postgres and MySQL are provided.
-<pre>
-<code>
-mvn test
-mvn test -Ddatabase=mysql
-mvn test -Ddatabase=postgres
-</code>
-</pre>
-* There are two workflows used: parent and child. Child workflow template is stored in Flux repository. Parent workflow spins off child instance for each S3 bucket.
+Testing
+===
+
+ConcurrentTest is a standalone test case which runs using an in-memory H2 database by default. Configuration for Postgres and MySQL are provided.
+
+```
+  mvn test -Djava.awt.headless=true
+```
+
+For MySQL
+
+```
+  mvn test -Ddatabase=mysql -DclearEngine=true -Djava.awt.headless=true
+```
+
+For Postgres
+
+```
+mvn test -Ddatabase=postgres -Djava.awt.headless=true
+```
+
+There are two workflows used: parent and child. Child workflow template is stored in Flux repository. Parent workflow spins off child instance for each S3 bucket.

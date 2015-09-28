@@ -28,13 +28,6 @@ public class GenomesProcessor implements ActionListener {
     private final String fluxUsername = "admin";
     private final String fluxPassword = "admin";
 
-    private Configuration makeConfig() throws Exception {
-        Factory factory = Factory.makeInstance();
-        Configuration config = factory.makeConfiguration();
-        config.setSecurityEnabled(true);
-        return config;
-    }
-
     @Override
     public Object actionFired(final KeyFlowContext flowContext) throws Exception {
         long begin = System.currentTimeMillis();
@@ -59,7 +52,7 @@ public class GenomesProcessor implements ActionListener {
 
         Map<String, S3ObjectSummary> objectSummaryMap = getS3ObjectSummaryMap();
         final int numObjects = objectSummaryMap.size();
-        final BlockingQueue<Runnable> taskQueue = new ArrayBlockingQueue<Runnable>(numObjects);
+        final BlockingQueue<Runnable> taskQueue = new ArrayBlockingQueue<>(numObjects);
 
         final ExecutorService executor = new ThreadPoolExecutor(CORE_WORKERS, NUM_WORKERS, 30, TimeUnit.SECONDS, taskQueue);
 
@@ -73,51 +66,47 @@ public class GenomesProcessor implements ActionListener {
         System.out.println("Found genome processing template from repository " + genomesProcessingTemplate.getName());
         System.out.println("Scheduling genomes for processing # " + new Date());
 
-        final ConcurrentMap<String, FlowChart> genomesFailedToSchedule = new ConcurrentHashMap<String, FlowChart>();
+        final ConcurrentMap<String, FlowChart> genomesFailedToSchedule = new ConcurrentHashMap<>();
         for (final Map.Entry<String, S3ObjectSummary> entry : objectSummaryMap.entrySet()) {
-            final boolean remoteSecured = secured;
-            Runnable worker = new Runnable() {
-                @Override
-                public void run() {
-                    final String key = entry.getKey();
-                    Engine remoteEngine = null;
-                    RemoteSecurity remoteSecurity = null;
-                    if (remoteSecured) {
-                        try {
-                            remoteSecurity = factory.lookupRemoteSecurity(makeConfig());
-                            remoteEngine = remoteSecurity.login(fluxUsername, fluxPassword);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        try {
-                            remoteEngine = factory.lookupRmiEngine(makeConfig());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    // Update the name
-                    String uuid = UUID.randomUUID().toString();
-                    genomesProcessingTemplate.setName(joinNamespace + uuid);
-                    genomesProcessingTemplate.getVariableManager().put("file_name", key);
-                    genomesProcessingTemplate.getVariableManager().put("file_size", entry.getValue().getSize());
+            final boolean finalSecured = secured;
+            Runnable worker = () -> {
+                final String key = entry.getKey();
+                Engine remoteEngine = null;
+                try {
+                    remoteEngine = factory.lookupEngine("localhost");
+                } catch (EngineException e) {
+                    e.printStackTrace();
+                }
+                if (finalSecured) {
                     try {
-                        String name = remoteEngine.put(genomesProcessingTemplate);
-                        System.out.println("Scheduled S3 object # " + name);
+                        if (remoteEngine != null) {
+                            remoteEngine.login(fluxUsername, fluxPassword);
+                        }
+                    } catch (EngineException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // Update the name
+                String uuid = UUID.randomUUID().toString();
+                genomesProcessingTemplate.setName(joinNamespace + uuid);
+                genomesProcessingTemplate.getVariableManager().put("file_name", key);
+                genomesProcessingTemplate.getVariableManager().put("file_size", entry.getValue().getSize());
+                try {
+                    String name = remoteEngine.put(genomesProcessingTemplate);
+                    System.out.println("Scheduled S3 object # " + name);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    genomesFailedToSchedule.put(genomesProcessingTemplate.getName(), genomesProcessingTemplate);
+                } finally {
+                    try {
+                        if (finalSecured) {
+                            remoteEngine.logout();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        genomesFailedToSchedule.put(genomesProcessingTemplate.getName(), genomesProcessingTemplate);
-                    } finally {
-                        try {
-                            if (remoteSecured && remoteSecurity != null) {
-                                remoteSecurity.logout(fluxUsername);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
-                    latch.countDown();
                 }
+                latch.countDown();
             };
             executor.execute(worker);
         }
@@ -163,7 +152,7 @@ public class GenomesProcessor implements ActionListener {
 
     private Map<String, S3ObjectSummary> getS3ObjectSummaryMap() {
         List<S3ObjectSummary> objectSummaryList = getS3ObjectSummary();
-        Map<String, S3ObjectSummary> objectSummaryMap = new TreeMap<String, S3ObjectSummary>();
+        Map<String, S3ObjectSummary> objectSummaryMap = new TreeMap<>();
         for (S3ObjectSummary objectSummary : objectSummaryList) {
             objectSummaryMap.put(objectSummary.getKey(), objectSummary);
         }

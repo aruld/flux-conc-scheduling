@@ -16,14 +16,14 @@ public class ConcurrentTest extends AbstractFluxTest {
 
     @Test
     public void testConcurrentPut() throws Exception {
-        FlowChart flowChart = engineHelper.makeFlowChart(GenomesProcessor.genomesChildWorkflowTemplate);
+        FlowChart flowChart = EngineHelper.makeFlowChart(GenomesProcessor.genomesChildWorkflowTemplate);
         NullAction printer = flowChart.makeNullAction("printer");
         printer.setPrescript("System.out.println(\"Processing file ${file_name} of size ${file_size}\");");
 
         engine.getRepositoryAdministrator().put(flowChart, true);
         System.out.println("Added child template to repository.");
 
-        FlowChart genomesWorkflow = engineHelper.makeFlowChart(GenomesProcessor.genomesParentWorkflow);
+        FlowChart genomesWorkflow = EngineHelper.makeFlowChart(GenomesProcessor.genomesParentWorkflow);
         JavaAction genomesProcessor = genomesWorkflow.makeJavaAction("genomes processor");
         genomesProcessor.setListener(GenomesProcessor.class);
 
