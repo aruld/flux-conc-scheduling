@@ -17,7 +17,7 @@ Setup
 * Install flux.jar to your local maven repo:
 
 ```
-    mvn install:install-file -DgroupId=flux -DartifactId=flux -Dversion=8.0.11 -Dpackaging=jar -Dfile=flux.jar
+mvn install:install-file -DgroupId=flux -DartifactId=flux -Dversion=8.0.11 -Dpackaging=jar -Dfile=flux.jar
 ```
 * Engine configuration is defined in engine-config.properties and runtime-config.properties, make changes appropriately.
 
@@ -27,13 +27,13 @@ Testing
 ConcurrentTest is a standalone test case which runs using an in-memory H2 database by default. Configuration for Postgres and MySQL are provided.
 
 ```
-  mvn test -Djava.awt.headless=true
+mvn test -Djava.awt.headless=true
 ```
 
 For MySQL
 
 ```
-  mvn test -Ddatabase=mysql -DclearEngine=true -Djava.awt.headless=true
+mvn test -Ddatabase=mysql -DclearEngine=true -Djava.awt.headless=true
 ```
 
 For Postgres
