@@ -2,7 +2,7 @@ Flux Concurrent Scheduling Sample
 ===
 
 This sample demonstrates a concurrent approach to scheduling Flux workflows that requires high throughput and coordinated executions.
-The dataset used in this sample comes from Amazon S3 bucket "1000genomes":http://aws.amazon.com/1000genomes/. It uses Amazon S3 APIs to retrieve objects and schedule them using a java action in Flux.
+The dataset used in this sample comes from Amazon S3 bucket "1000genomes": http://aws.amazon.com/1000genomes/. It uses Amazon S3 APIs to retrieve objects and schedule them using a java action in Flux.
 
 This sample implements Flux best practices when dealing with java actions. Java action is a double-edged sword, while offering more
 power for advanced users, it is sometimes tricky to implement how to gracefully return them to Flux when involving calls to external
