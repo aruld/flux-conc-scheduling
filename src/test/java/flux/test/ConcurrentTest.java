@@ -29,6 +29,6 @@ public class ConcurrentTest extends AbstractFluxTest {
 
         String name = engine.put(genomesWorkflow);
         System.out.println("Scheduled genomes parent workflow : " + name);
-        assertEquals(1000, waitForRuns(GenomesProcessor.joinNamespace, 1000, 10, 120));
+        assertEquals(1000, waitForRuns(GenomesProcessor.joinNamespace, 1000, 10, 10000));
     }
 }

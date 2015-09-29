@@ -42,4 +42,11 @@ For Postgres
 mvn test -Ddatabase=postgres -Djava.awt.headless=true
 ```
 
+For Microsoft SQL Server, download the driver from http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=11774 and install to your local maven repository
+
+```
+mvn install:install-file -Dfile=sqljdbc4.jar -Dpackaging=jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.0
+mvn test -Ddatabase=sql_server -Djava.awt.headless=true
+```
+
 There are two workflows used: parent and child. Child workflow template is stored in Flux repository. Parent workflow spins off child instance for each S3 bucket.

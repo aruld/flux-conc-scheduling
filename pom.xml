@@ -58,6 +58,14 @@
             <version>5.1.35</version>
             <scope>test</scope>
         </dependency>
+
+        <!--mvn install:install-file -Dfile=sqljdbc4.jar -Dpackaging=jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.0-->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc4</artifactId>
+            <version>4.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

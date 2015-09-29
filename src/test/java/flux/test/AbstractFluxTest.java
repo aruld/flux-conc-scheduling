@@ -34,6 +34,9 @@ public abstract class AbstractFluxTest {
         } else if (database != null && database.equalsIgnoreCase(DatabaseType.MYSQL.toString())) {
             enginePropertiesFile = "engine-mysql-config.properties";
             log.info("Using MySQL backend.");
+        } else if (database != null && database.equalsIgnoreCase(DatabaseType.SQL_SERVER.toString())) {
+            enginePropertiesFile = "engine-sqlserver-config.properties";
+            log.info("Using SQL Server backend.");
         }
         config = new Configuration(enginePropertiesFile);
         engine = factory.makeEngine(config);
